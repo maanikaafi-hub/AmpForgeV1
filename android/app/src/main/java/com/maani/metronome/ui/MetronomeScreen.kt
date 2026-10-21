@@ -28,12 +28,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.VolumeDown
-import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -51,6 +47,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
@@ -134,7 +131,9 @@ fun MetronomeScreen(
                     label = "Decrease tempo",
                     onClick = { onAdjustTempo(-1) },
                     modifier = Modifier.size(54.dp),
-                ) { Icon(Icons.Filled.Remove, contentDescription = null, modifier = Modifier.size(23.dp)) }
+                ) {
+                    Text("−", color = MetronomePalette.BrassLight, fontSize = 28.sp, lineHeight = 28.sp)
+                }
                 Spacer(Modifier.width(16.dp))
                 TactileButton(
                     label = "Play metronome",
@@ -142,11 +141,8 @@ fun MetronomeScreen(
                     primary = true,
                     modifier = Modifier.size(72.dp),
                 ) {
-                    Icon(
-                        if (state.isPlaying) Icons.Filled.Pause else Icons.Filled.PlayArrow,
-                        contentDescription = null,
-                        modifier = Modifier.size(34.dp),
-                    )
+                    if (state.isPlaying) PauseGlyph(Modifier.size(27.dp))
+                    else Icon(Icons.Filled.PlayArrow, contentDescription = null, modifier = Modifier.size(34.dp))
                 }
                 Spacer(Modifier.width(16.dp))
                 TactileButton(
@@ -344,7 +340,7 @@ private fun VolumeControl(volume: Float, onVolume: (Float) -> Unit) {
         modifier = Modifier.fillMaxWidth().padding(horizontal = 3.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Icon(Icons.Filled.VolumeDown, contentDescription = "Volume", tint = MetronomePalette.Muted, modifier = Modifier.size(19.dp))
+        VolumeGlyph(loud = false, modifier = Modifier.size(19.dp), tint = MetronomePalette.Muted)
         Slider(
             value = volume,
             onValueChange = onVolume,
@@ -355,7 +351,59 @@ private fun VolumeControl(volume: Float, onVolume: (Float) -> Unit) {
                 inactiveTrackColor = Color(0xFF403326),
             ),
         )
-        Icon(Icons.Filled.VolumeUp, contentDescription = null, tint = MetronomePalette.Brass, modifier = Modifier.size(19.dp))
+        VolumeGlyph(loud = true, modifier = Modifier.size(19.dp), tint = MetronomePalette.Brass)
+    }
+}
+
+
+@Composable
+private fun PauseGlyph(modifier: Modifier = Modifier) {
+    val tint = androidx.compose.material3.LocalContentColor.current
+    androidx.compose.foundation.Canvas(modifier) {
+        val barWidth = size.width * 0.27f
+        val barHeight = size.height * 0.78f
+        val top = (size.height - barHeight) / 2f
+        val gap = size.width * 0.16f
+        val total = barWidth * 2f + gap
+        val left = (size.width - total) / 2f
+        drawRoundRect(tint, Offset(left, top), androidx.compose.ui.geometry.Size(barWidth, barHeight), androidx.compose.ui.geometry.CornerRadius(barWidth * 0.25f))
+        drawRoundRect(tint, Offset(left + barWidth + gap, top), androidx.compose.ui.geometry.Size(barWidth, barHeight), androidx.compose.ui.geometry.CornerRadius(barWidth * 0.25f))
+    }
+}
+
+@Composable
+private fun VolumeGlyph(loud: Boolean, modifier: Modifier = Modifier, tint: Color) {
+    androidx.compose.foundation.Canvas(modifier) {
+        val speaker = androidx.compose.ui.graphics.Path().apply {
+            moveTo(size.width * 0.08f, size.height * 0.38f)
+            lineTo(size.width * 0.31f, size.height * 0.38f)
+            lineTo(size.width * 0.60f, size.height * 0.14f)
+            lineTo(size.width * 0.60f, size.height * 0.86f)
+            lineTo(size.width * 0.31f, size.height * 0.62f)
+            lineTo(size.width * 0.08f, size.height * 0.62f)
+            close()
+        }
+        drawPath(speaker, tint)
+        drawArc(
+            color = tint,
+            startAngle = -52f,
+            sweepAngle = 104f,
+            useCenter = false,
+            topLeft = Offset(size.width * 0.44f, size.height * 0.27f),
+            size = androidx.compose.ui.geometry.Size(size.width * 0.42f, size.height * 0.46f),
+            style = androidx.compose.ui.graphics.drawscope.Stroke(width = size.width * 0.09f),
+        )
+        if (loud) {
+            drawArc(
+                color = tint,
+                startAngle = -52f,
+                sweepAngle = 104f,
+                useCenter = false,
+                topLeft = Offset(size.width * 0.48f, size.height * 0.08f),
+                size = androidx.compose.ui.geometry.Size(size.width * 0.48f, size.height * 0.84f),
+                style = androidx.compose.ui.graphics.drawscope.Stroke(width = size.width * 0.08f),
+            )
+        }
     }
 }
 

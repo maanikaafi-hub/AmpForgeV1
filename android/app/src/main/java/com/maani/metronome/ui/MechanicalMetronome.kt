@@ -22,6 +22,7 @@ import android.graphics.Paint
 import android.graphics.Typeface
 import com.maani.metronome.model.Tempo
 import kotlin.math.sin
+import kotlin.math.cos
 import kotlin.random.Random
 
 /**
