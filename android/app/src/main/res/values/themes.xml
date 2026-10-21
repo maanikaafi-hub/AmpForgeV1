@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Base theme: dark, no action bar. Compose draws everything else. -->
+    <style name="Theme.MaaniMetronome" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/walnut_dark</item>
+        <item name="android:colorPrimary">@color/brass_deep</item>
+        <item name="android:colorAccent">@color/brass_deep</item>
+    </style>
+</resources>
