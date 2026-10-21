@@ -32,7 +32,13 @@ jobs:
 
       - name: Use runner Android SDK
         run: |
-          echo "Android SDK: ${ANDROID_HOME:-${ANDROID_SDK_ROOT:-not set}}"
+          export ANDROID_HOME="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-/usr/local/lib/android/sdk}}"
+          export ANDROID_SDK_ROOT="$ANDROID_HOME"
+          export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH"
+          echo "ANDROID_HOME=$ANDROID_HOME" >> "$GITHUB_ENV"
+          echo "$ANDROID_HOME/cmdline-tools/latest/bin" >> "$GITHUB_PATH"
+          echo "$ANDROID_HOME/platform-tools" >> "$GITHUB_PATH"
+          echo "Android SDK: $ANDROID_HOME"
           command -v sdkmanager
           yes | sdkmanager --licenses >/dev/null
           sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
